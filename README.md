@@ -51,5 +51,3 @@ The url should match the api url.
 4- Run both projects at the same time(I used Visual Studio), and you can use the Web App which is now connected to the Web Api in the 1st project.
 
 You can also test the Web Api individually via Swagger UI.
-
-I wrote this in English and translated it into russian via Google, if something is not clear, let me know.
