@@ -19,9 +19,27 @@ namespace ToDoListFrontEnd.Pages.ToDoItems
         public IList<User> Users { get; set; }
         [BindProperty]
         public ToDoItem ToDoItem { get; set; }
-        public async Task OnGetAsync()
+
+        [BindProperty(SupportsGet = true)]
+        public bool? IsCompleted { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int? priorityLevel { get; set; }
+
+        public async Task OnGetAsync(bool? IsCompleted = null, int? priorityLevel = null)
         {
-            ToDoItems = await _httpClient.GetFromJsonAsync<IList<ToDoItem>>("ToDoItems");
+            var filterParams = new List<string>();
+            if (IsCompleted.HasValue)
+            {
+                filterParams.Add($"IsCompleted={IsCompleted.Value}");
+            }
+            if (priorityLevel.HasValue)
+            {
+                filterParams.Add($"priorityLevel={priorityLevel.Value}");
+            }
+            var queryString = string.Join("&", filterParams);
+            var toDoItemsUrl = string.IsNullOrWhiteSpace(queryString) ? "ToDoItems" : $"ToDoItems?{queryString}";
+
+            ToDoItems = await _httpClient.GetFromJsonAsync<IList<ToDoItem>>(toDoItemsUrl);
             Users = await _httpClient.GetFromJsonAsync<IList<User>>("Users");
         }
 

@@ -2,16 +2,40 @@
 @model ToDoListFrontEnd.Pages.ToDoItems.IndexModel
 @{
     ViewData["Title"] = "ToDo List";
+    var priorityLevels = new int[] { 1, 2, 3, 4, 5 };
 }
 
 <div class="container mt-4">
     <h1 class="mb-4">ToDo List</h1>
-    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
-    {
-        <div class="alert alert-danger" role="alert">
-            @ViewData["ErrorMessage"]
+    
+    <!-- Filtering Form -->
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="IsCompleted">
+                    <option value="">All</option>
+                    <option value="true" selected="@(Model.IsCompleted == true)">Completed</option>
+                    <option value="false" selected="@(Model.IsCompleted == false)">Pending</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priorityLevel">
+                    <option value="">All</option>
+                    @foreach (int priorityId in priorityLevels)
+                    {
+                        <option value="@priorityId" selected="@(Model.priorityLevel == priorityId)">@GetPriorityAlias(priorityId)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label d-block">&nbsp;</label>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
         </div>
-    }
+    </form>
+
     <div class="row">
         <div class="col-md-8">
             <!-- ToDo list -->
@@ -46,9 +70,15 @@
         </div>
 
         <div class="col-md-4">
+            @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewData["ErrorMessage"]
+                </div>
+            }
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Add New ToDo</h5>
+                    <h5 class="card-title">Add New ToDo Item</h5>
                     <form method="post" asp-page-handler="Create" onsubmit="return validateForm()">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
