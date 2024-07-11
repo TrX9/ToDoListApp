@@ -6,7 +6,7 @@ Solution содержит 2 проекта.
 
 Чтобы запустить этот проект:
 
-1- Создайте базу данных под названием «ToDoAppDb» (я использовал MSSQL).
+1. Создайте базу данных под названием «ToDoAppDb» (я использовал MSSQL) и измените ConnectionString в appsettings.json в проекте WebApi(ToDoListApp), чтобы она соответствовала имени вашего сервера базы данных.
 
 2- Чтобы создать таблицы, запустите команды миграции в cmd или Nuget Package Manager Console в проекта Web Api:
 
@@ -36,7 +36,7 @@ The first project is the Web Api (To Do List App), and the 2nd project is the We
 
 To run this project:
 
-1- Create a database called "ToDoAppDb" (I used MSSQL).
+1- Create a database called "ToDoAppDb" (I used MSSQL), and change the connectionString in appsettings.json in the WebApi project to match your database server name.
 
 2- To create the tables, Run Migration commands in cmd or Nuget Package Manager Console in the Web Api project directory:
 
