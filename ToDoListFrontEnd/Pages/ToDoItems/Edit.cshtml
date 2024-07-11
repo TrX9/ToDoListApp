@@ -1,16 +1,17 @@
-﻿@page
-@model ToDoListFrontEnd.Pages.ToDoItems.CreateModel
+﻿@page "{id:int}"
+@model ToDoListFrontEnd.Pages.ToDoItems.EditModel
 @{
-    ViewData["Title"] = "Create To-Do Item";
+    ViewData["Title"] = "Edit To-Do Item";
 }
 
-<h1>Create To-Do Item</h1>
+<h1>Edit To-Do Item</h1>
 
 <h4>To-Do Item</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
+            <input type="hidden" asp-for="ToDoItem.Id" />
             <div class="form-group">
                 <label asp-for="ToDoItem.Title" class="control-label"></label>
                 <input asp-for="ToDoItem.Title" class="form-control" />
@@ -24,14 +25,14 @@
             <div class="form-group">
                 <label asp-for="ToDoItem.IsCompleted" class="control-label"></label>
                 <select asp-for="ToDoItem.IsCompleted" class="form-control">
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="true" selected="@Model.ToDoItem.IsCompleted">Yes</option>
+                    <option value="false" selected="@(!Model.ToDoItem.IsCompleted)">No</option>
                 </select>
                 <span asp-validation-for="ToDoItem.IsCompleted" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ToDoItem.DueDate" class="control-label"></label>
-                <input asp-for="ToDoItem.DueDate" class="form-control" />
+                <input asp-for="ToDoItem.DueDate" class="form-control" type="date" />
                 <span asp-validation-for="ToDoItem.DueDate" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -45,7 +46,7 @@
                 <span asp-validation-for="ToDoItem.UserId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

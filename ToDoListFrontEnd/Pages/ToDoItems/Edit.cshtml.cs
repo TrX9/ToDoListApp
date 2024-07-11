@@ -4,11 +4,11 @@ using ToDoListFrontEnd.Models;
 
 namespace ToDoListFrontEnd.Pages.ToDoItems
 {
-    public class CreateModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly HttpClient _httpClient;
 
-        public CreateModel(IHttpClientFactory httpClientFactory)
+        public EditModel(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient("ToDoApi");
         }
@@ -18,9 +18,16 @@ namespace ToDoListFrontEnd.Pages.ToDoItems
 
         public IList<User> Users { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int id)
         {
+            ToDoItem = await _httpClient.GetFromJsonAsync<ToDoItem>($"ToDoItems/{id}");
             Users = await _httpClient.GetFromJsonAsync<IList<User>>("Users");
+
+            if (ToDoItem == null)
+            {
+                return NotFound();
+            }
+
             return Page();
         }
 
@@ -32,11 +39,11 @@ namespace ToDoListFrontEnd.Pages.ToDoItems
                 return Page();
             }
 
-            var response = await _httpClient.PostAsJsonAsync("ToDoItems", ToDoItem);
+            var response = await _httpClient.PutAsJsonAsync($"ToDoItems/{ToDoItem.Id}", ToDoItem);
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "An error occurred while creating the to-do item.");
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the to-do item.");
                 Users = await _httpClient.GetFromJsonAsync<IList<User>>("Users");
                 return Page();
             }

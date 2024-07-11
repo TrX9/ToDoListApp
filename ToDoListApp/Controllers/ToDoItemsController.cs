@@ -58,20 +58,32 @@ namespace ToDoListApp.Controllers
                 return BadRequest();
             }
 
-            // Ensure the user exists
             var user = await _context.Users.FindAsync(toDoItem.UserId);
             if (user == null)
             {
                 return BadRequest("Invalid UserId");
             }
 
-            _context.Entry(toDoItem).State = EntityState.Modified;
+            var existingItem = await _context.ToDoItems.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+
+            existingItem.Title = toDoItem.Title;
+            existingItem.Description = toDoItem.Description;
+            existingItem.IsCompleted = toDoItem.IsCompleted;
+            existingItem.DueDate = toDoItem.DueDate;
+            existingItem.PriorityId = toDoItem.PriorityId;
+            existingItem.UserId = toDoItem.UserId;
+            _context.Entry(existingItem).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e1)
             {
                 if (!ToDoItemExists(id))
                 {
@@ -90,7 +102,6 @@ namespace ToDoListApp.Controllers
         [HttpPost]
         public async Task<ActionResult<ToDoItem>> PostToDoItem(ToDoItem toDoItem)
         {
-            // Ensure the user exists
             var user = await _context.Users.FindAsync(toDoItem.UserId);
             if (user == null)
             {
@@ -98,8 +109,15 @@ namespace ToDoListApp.Controllers
             }
 
             _context.ToDoItems.Add(toDoItem);
-            await _context.SaveChangesAsync();
 
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e1)
+            {
+                return NotFound(e1.Message);
+            }
             return CreatedAtAction("GetToDoItem", new { id = toDoItem.Id }, toDoItem);
         }
 

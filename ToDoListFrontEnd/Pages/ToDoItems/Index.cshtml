@@ -1,42 +1,129 @@
 ﻿@page
 @model ToDoListFrontEnd.Pages.ToDoItems.IndexModel
 @{
-    ViewData["Title"] = "To-Do List";
+    ViewData["Title"] = "ToDo List";
 }
 
-<h1>To-Do List</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">ToDo List</h1>
+    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
+    <div class="row">
+        <div class="col-md-8">
+            <!-- ToDo list -->
+            <ul class="list-group">
+                @foreach (var item in Model.ToDoItems)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>@item.Title</h5>
+                            <p>@item.Description</p>
+                            <small>@item.DueDate.ToShortDateString()</small>
+                            <small>Assigned To: @item.User.Name</small>
+                        </div>
+                        <div>
+                            @if (item.IsCompleted)
+                            {
+                                <span class="badge bg-success">Completed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            <span class="badge bg-primary">@GetPriorityAlias(item.PriorityId)</span>
+                            <a href="/ToDoItems/Edit/@item.Id" class="btn btn-primary btn-sm ms-2">Edit</a>
+                            <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Add New ToDo</h5>
+                    <form method="post" asp-page-handler="Create" onsubmit="return validateForm()">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="Title" required>
+                            <div class="invalid-feedback">Please enter a title.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="Description" required></textarea>
+                            <div class="invalid-feedback">Please enter a description.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dueDate" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="dueDate" name="DueDate" required>
+                            <div class="invalid-feedback">Please select a due date.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="PriorityId" required>
+                                <option value="">Select Priority</option>
+                                <option value="1">Low Importance</option>
+                                <option value="2">Low</option>
+                                <option value="3">Medium</option>
+                                <option value="4">High</option>
+                                <option value="5">High Priority</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a priority.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user" class="form-label">Assign User</label>
+                            <select class="form-select" id="user" name="UserId" required>
+                                <option value="">Select User</option>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <option value="@user.Id">@user.Name</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">Please select a user.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add ToDo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Is Completed</th>
-            <th>Due Date</th>
-            <th>Priority</th>
-            <th>User</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ToDoItems)
-        {
-            <tr>
-                <td>@item.Title</td>
-                <td>@item.Description</td>
-                <td>@item.IsCompleted</td>
-                <td>@item.DueDate</td>
-                <td>@item.Priority.Level</td>
-                <td>@item.User.Name</td>
-                <td>
-                    <a asp-page="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+<script>
+    function validateForm() {
+        var form = document.forms[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
         }
-    </tbody>
-</table>
+        form.classList.add('was-validated');
+        return form.checkValidity();
+    }
+</script>
+@{
+    string GetPriorityAlias(int priority)
+    {
+        switch (priority)
+        {
+            case 1:
+                return "Very Low Priority";
+            case 2:
+                return "Low Priority";
+            case 3:
+                return "Medium Priority";
+            case 4:
+                return "High Priority";
+            case 5:
+                return "Very High Priority";
+            default:
+                return "";
+        }
+    }
+}

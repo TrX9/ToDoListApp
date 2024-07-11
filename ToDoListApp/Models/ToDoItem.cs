@@ -20,10 +20,13 @@ namespace ToDoListApp.Models
 
         [Required]
         public int PriorityId { get; set; }
-        public Priority Priority { get; set; }
+        public Priority? Priority { get; set; }
 
         [Required]
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
+
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
     }
 }
